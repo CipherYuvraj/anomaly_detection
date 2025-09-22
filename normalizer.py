@@ -36,27 +36,33 @@ def normalize_query(query):
 
 def normalize_headers(headers: dict) -> dict:
     h = {}
+    if not headers:
+        return h
+
+    # normalize keys to lowercase
+    headers = {k.lower(): v for k, v in headers.items()}
+
     # User Agent
-    if "User-Agent" in headers:
-        h["ua"] = headers["User-Agent"]
+    if "user-agent" in headers:
+        h["ua"] = headers["user-agent"]
     elif "ua" in headers:
         h["ua"] = headers["ua"]
 
     # Content-Type
-    if "Content-Type" in headers:
-        h["ct"] = headers["Content-Type"]
+    if "content-type" in headers:
+        h["ct"] = headers["content-type"]
     elif "ct" in headers:
         h["ct"] = headers["ct"]
 
     # Content-Length
-    if "Content-Length" in headers:
+    if "content-length" in headers:
         h["cl"] = ":num"
     elif "cl" in headers:
         h["cl"] = ":num"
 
     # Cookie parsing
-    if "Cookie" in headers:
-        cookie_keys = [kv.split("=")[0].strip() for kv in headers["Cookie"].split(";") if "=" in kv]
+    if "cookie" in headers:
+        cookie_keys = [kv.split("=")[0].strip() for kv in headers["cookie"].split(";") if "=" in kv]
         h["cookieKeys"] = cookie_keys
     elif "cookieKeys" in headers:
         h["cookieKeys"] = headers["cookieKeys"]
@@ -64,18 +70,33 @@ def normalize_headers(headers: dict) -> dict:
     return h
 
 
+
 def normalize_request(log_line: str):
     try:
         data = orjson.loads(log_line)
+
         return {
             "m": data.get("method", ""),
             "p": normalize_path(data.get("path", "")),
             "q": normalize_query(data.get("query", {})),
-            "h": normalize_headers(data.get("headers", {}))
+            "h": normalize_headers(data.get("headers", {})),
+            "s": data.get("remote_addr", ""),   
+            "b": parse_body(data)               
         }
     except Exception as e:
         print("Normalize error:", e)
         return None
+
+
+def parse_body(data: dict):
+    body = data.get("body")
+    if not body:
+        return {}
+    try:
+        return orjson.loads(body) if isinstance(body, str) else body
+    except Exception:
+        return {"raw": body}
+
 
 print("Normalizer running...")
 
