@@ -47,18 +47,24 @@ def normalize_headers(headers: dict) -> dict:
         h["ua"] = headers["user-agent"]
     elif "ua" in headers:
         h["ua"] = headers["ua"]
+    else:
+        h["ua"] = ""
 
     # Content-Type
     if "content-type" in headers:
         h["ct"] = headers["content-type"]
     elif "ct" in headers:
         h["ct"] = headers["ct"]
+    else:
+        h["ct"] = ""
 
     # Content-Length
     if "content-length" in headers:
         h["cl"] = ":num"
     elif "cl" in headers:
         h["cl"] = ":num"
+    else:
+        h["cl"] = ""    
 
     # Cookie parsing
     if "cookie" in headers:
@@ -66,6 +72,8 @@ def normalize_headers(headers: dict) -> dict:
         h["cookieKeys"] = cookie_keys
     elif "cookieKeys" in headers:
         h["cookieKeys"] = headers["cookieKeys"]
+    else:
+        h["cookieKeys"] = []
 
     return h
 
