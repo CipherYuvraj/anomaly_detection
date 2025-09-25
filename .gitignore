@@ -1,2 +1,3 @@
 /nginx_logs
 /webserver(js)/node_modules
+parsed_logs.jsonl
