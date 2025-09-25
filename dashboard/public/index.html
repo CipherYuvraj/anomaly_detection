@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAF Anomaly Detection Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            min-height: 100vh;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .stat-card.danger::before {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+        }
+
+        .stat-card.success::before {
+            background: linear-gradient(90deg, #51cf66, #40c057);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .requests-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .request-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #51cf66;
+        }
+
+        .request-item.malicious {
+            background: #fff5f5;
+            border-color: #ff6b6b;
+        }
+
+        .request-item.malicious::before {
+            background: #ff6b6b;
+        }
+
+        .request-info {
+            flex: 1;
+        }
+
+        .request-method {
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #667eea;
+            color: white;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .request-path {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .request-source {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .request-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .score-value.safe {
+            color: #51cf66;
+        }
+
+        .score-value.malicious {
+            color: #ff6b6b;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-label.safe {
+            color: #51cf66;
+        }
+
+        .score-label.malicious {
+            color: #ff6b6b;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 300px;
+        }
+
+        .live-status {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #51cf66;
+            display: inline-block;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .dashboard {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> WAF Anomaly Detection</h1>
+            <p class="subtitle">Real-time monitoring and threat detection dashboard</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-value" id="totalRequests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            
+            <div class="stat-card danger">
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-value" id="maliciousRequests">0</div>
+                <div class="stat-label">Malicious Requests</div>
+            </div>
+            
+            <div class="stat-card success">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-value" id="safeRequests">0</div>
+                <div class="stat-label">Safe Requests</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="stat-value" id="averageScore">0.0</div>
+                <div class="stat-label">Average Score</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="requests-section">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i> Recent Requests
+                    <span class="alert-badge" id="alertBadge" style="display: none;">!</span>
+                </h2>
+                <div id="requestsList"></div>
+            </div>
+
+            <div class="sidebar">
+                <div class="live-status">
+                    <h3 class="section-title">
+                        <span class="status-indicator"></span>
+                        Live Monitoring
+                    </h3>
+                    <p>Watching for new threats...</p>
+                    <div class="timestamp" id="lastUpdate">Last update: Never</div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="section-title">Score Distribution</h3>
+                    <canvas id="scoreChart" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Socket.IO connection
+        const socket = io();
+        
+        let chart;
+        let recentScores = [];
+        let maliciousCount = 0;
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Risk Score',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: function(context) {
+                            if (context && context.parsed && typeof context.parsed.y === 'number') {
+                                return context.parsed.y > 5.46 ? '#ff6b6b' : '#51cf66';
+                            }
+                            return '#667eea'; // Default color
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update statistics
+        function updateStats(stats) {
+            try {
+                const totalEl = document.getElementById('totalRequests');
+                const maliciousEl = document.getElementById('maliciousRequests');
+                const safeEl = document.getElementById('safeRequests');
+                const avgEl = document.getElementById('averageScore');
+                
+                if (totalEl && typeof stats.totalRequests === 'number') {
+                    totalEl.textContent = stats.totalRequests;
+                }
+                if (maliciousEl && typeof stats.maliciousRequests === 'number') {
+                    maliciousEl.textContent = stats.maliciousRequests;
+                }
+                if (safeEl && typeof stats.safeRequests === 'number') {
+                    safeEl.textContent = stats.safeRequests;
+                }
+                if (avgEl && typeof stats.averageScore === 'number') {
+                    avgEl.textContent = stats.averageScore.toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // Add new request to the list
+        function addRequestToList(request) {
+            const requestsList = document.getElementById('requestsList');
+            const requestDiv = document.createElement('div');
+            requestDiv.className = `request-item ${request.status.toLowerCase()}`;
+            
+            const timestamp = new Date(request.timestamp).toLocaleTimeString();
+            
+            requestDiv.innerHTML = `
+                <div class="request-info">
+                    <div>
+                        <span class="request-method">${request.method}</span>
+                        <span class="request-path">${request.path}</span>
+                    </div>
+                    <div class="request-source">From: ${request.source}</div>
+                    <div class="timestamp">${timestamp}</div>
+                </div>
+                <div class="request-score">
+                    <div class="score-value ${request.status.toLowerCase()}">${request.score}</div>
+                    <div class="score-label ${request.status.toLowerCase()}">${request.status}</div>
+                </div>
+            `;
+            
+            requestsList.insertBefore(requestDiv, requestsList.firstChild);
+            
+            // Keep only last 20 requests visible
+            const requests = requestsList.children;
+            if (requests.length > 20) {
+                requestsList.removeChild(requests[requests.length - 1]);
+            }
+            
+            // Update chart
+            if (typeof request.score === 'number' && !isNaN(request.score)) {
+                recentScores.unshift(request.score);
+                if (recentScores.length > 20) {
+                    recentScores.pop();
+                }
+                
+                if (chart && chart.data) {
+                    chart.data.labels = recentScores.map((_, i) => i + 1);
+                    chart.data.datasets[0].data = recentScores.slice().reverse();
+                    try {
+                        chart.update('none'); // Use 'none' animation mode for better performance
+                    } catch (error) {
+                        console.error('Chart update error:', error);
+                    }
+                }
+            }
+            
+            // Show alert badge for malicious requests
+            if (request.status === 'MALICIOUS') {
+                maliciousCount++;
+                const alertBadge = document.getElementById('alertBadge');
+                alertBadge.style.display = 'block';
+                alertBadge.textContent = maliciousCount > 99 ? '99+' : maliciousCount;
+            }
+            
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = `Last update: ${timestamp}`;
+        }
+
+        // Socket event handlers
+        socket.on('connect', () => {
+            console.log('Connected to dashboard server');
+        });
+
+        socket.on('initialData', (data) => {
+            try {
+                if (data && data.stats) {
+                    updateStats(data.stats);
+                }
+                if (data && data.recentRequests && Array.isArray(data.recentRequests)) {
+                    data.recentRequests.forEach(request => {
+                        if (request && typeof request === 'object') {
+                            addRequestToList(request);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error processing initial data:', error);
+            }
+        });
+
+        socket.on('newRequest', (request) => {
+            try {
+                if (request && typeof request === 'object') {
+                    addRequestToList(request);
+                }
+            } catch (error) {
+                console.error('Error processing new request:', error);
+            }
+        });
+
+        socket.on('statsUpdate', (stats) => {
+            try {
+                if (stats && typeof stats === 'object') {
+                    updateStats(stats);
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from dashboard server');
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            
+            // Clear alert badge on click
+            document.getElementById('alertBadge').addEventListener('click', () => {
+                maliciousCount = 0;
+                document.getElementById('alertBadge').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

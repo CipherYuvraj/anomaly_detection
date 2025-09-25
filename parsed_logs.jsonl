@@ -10072,4 +10072,8 @@
 {"m":"GET","p":"/","q":{},"h":{"ua":"curl/8.16.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
 {"m":"GET","p":"/","q":{"hello":":num"},"h":{"ua":"PostmanRuntime/7.46.1","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
 {"m":"PUT","p":"/profile","q":{},"h":{"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","Content-Type":"application/json"},"s":"172.18.0.1","b":{"message":"Hello World"}}
-{"m":"PUT","p":"/profile","q":{},"h":{"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","Content-Type":"application/json"},"s":"172.18.0.1","b":{"message":"Hello World"}}
+{"m":"PUT","p":"/profile","q":{},"h":{"ua":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","Content-Type":"application/json"},"s":"172.18.0.1","b":{"message":"Hello World"}}{"m":"GET","p":"/","q":{},"h":{"ua":"curl/8.16.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"curl/8.16.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"curl/8.16.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{"payload":"%22%3Cscript%3Ealert(!)%3C/script%3E"},"h":{"ua":"PostmanRuntime/7.46.1","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"POST","p":"/login","q":{},"h":{"ua":"PostmanRuntime/7.46.1","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"username":"hacker","password":"kjbhugohbfb jwbgibweo jbiugnuiebheh3qa"}}

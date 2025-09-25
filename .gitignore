@@ -1,3 +1,5 @@
 /nginx_logs
 /webserver(js)/node_modules
 parsed_logs.jsonl
+dashboard/README.md
+dashboard/node_modules/
