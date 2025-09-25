@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Simple Bash version for generating safe requests
-# Uses curl instead of Python requests library
-
 BASE_URL="http://localhost:3000"
 TOTAL_REQUESTS=10000
 

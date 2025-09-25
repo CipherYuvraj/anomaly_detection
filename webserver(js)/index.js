@@ -65,10 +65,6 @@ app.post('/login', (req, res) => {
     warning: 'This endpoint is vulnerable to LDAP injection for testing purposes'
   });
 });
-
-// ============= HIGH-RISK ATTACK ENDPOINTS FOR MODEL TESTING =============
-
-// 1. Extremely Malicious SQL Injection Endpoint
 app.get('/admin/bypass/:token', (req, res) => {
   const token = req.params.token;
   const maliciousQuery = `SELECT * FROM admin_users WHERE token = '${token}' OR '1'='1' UNION SELECT password,credit_card FROM sensitive_data; DROP TABLE audit_logs; --`;
@@ -82,8 +78,6 @@ app.get('/admin/bypass/:token', (req, res) => {
     warning: '⚠️ This endpoint contains multiple attack vectors for high-score testing'
   });
 });
-
-// 2. Severe Path Traversal with System Access
 app.get('/system/read/:path', (req, res) => {
   const path = req.params.path;
   const systemPaths = [
@@ -104,8 +98,6 @@ app.get('/system/read/:path', (req, res) => {
     warning: '⚠️ This endpoint simulates severe path traversal attacks'
   });
 });
-
-// 3. Multi-Vector Attack Endpoint (XSS + Command Injection + LDAP)
 app.post('/execute/command', (req, res) => {
   const { cmd, user, script } = req.body;
   

@@ -3,7 +3,7 @@ import time
 import os
 from ml_scorer.score_requests import score
 
-threshold = 5.46  # Based on score analysis - optimal threshold
+threshold = 5.46
 parsed_logs_path = "../parsed_logs.jsonl"
 
 def get_last_line(file_path):
@@ -40,12 +40,10 @@ def score_last_request():
         print(f"Error scoring request: {e}")
         return None
 
-# Score the current last line first
 print("Scoring current last request...")
 score_last_request()
 print("-" * 50)
 
-# Monitor file for changes and score new requests
 print("Monitoring parsed_logs.jsonl for new requests...")
 print("Press Ctrl+C to stop monitoring\n")
 
@@ -58,14 +56,13 @@ try:
         if os.path.exists(parsed_logs_path):
             current_size = os.path.getsize(parsed_logs_path)
             
-            # Check if file has grown (new line added)
             if current_size > last_file_size:
                 print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] New log detected!")
                 score_last_request()
                 last_file_size = current_size
                 print("-" * 50)
         
-        time.sleep(1)  # Check every second
+        time.sleep(1)
         
 except KeyboardInterrupt:
     print("\nStopping log monitor...")
