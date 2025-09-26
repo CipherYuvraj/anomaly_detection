@@ -70,12 +70,12 @@ app.get('/admin/bypass/:token', (req, res) => {
   const maliciousQuery = `SELECT * FROM admin_users WHERE token = '${token}' OR '1'='1' UNION SELECT password,credit_card FROM sensitive_data; DROP TABLE audit_logs; --`;
   
   res.json({
-    message: '🚨 CRITICAL VULNERABILITY DETECTED',
+    message: 'CRITICAL VULNERABILITY DETECTED',
     executed_query: maliciousQuery,
     attack_type: 'Advanced SQL Injection + Union Attack + Table Drop',
     risk_level: 'CRITICAL',
     token: token,
-    warning: '⚠️ This endpoint contains multiple attack vectors for high-score testing'
+    warning: 'This endpoint contains multiple attack vectors for high-score testing'
   });
 });
 app.get('/system/read/:path', (req, res) => {
@@ -89,13 +89,13 @@ app.get('/system/read/:path', (req, res) => {
   ];
   
   res.json({
-    message: '🚨 SYSTEM FILE ACCESS ATTEMPT',
+    message: 'SYSTEM FILE ACCESS ATTEMPT',
     requested_path: path,
     full_path: `/var/www/html/${path}`,
     system_files_targeted: systemPaths,
     attack_type: 'Directory Traversal + System File Access',
     risk_level: 'CRITICAL',
-    warning: '⚠️ This endpoint simulates severe path traversal attacks'
+    warning: 'This endpoint simulates severe path traversal attacks'
   });
 });
 app.post('/execute/command', (req, res) => {
@@ -108,26 +108,26 @@ app.post('/execute/command', (req, res) => {
   ];
   
   res.json({
-    message: '🚨 MULTI-VECTOR ATTACK DETECTED',
+    message: 'MULTI-VECTOR ATTACK DETECTED',
     command_injection: maliciousCommands[0],
     xss_payload: maliciousCommands[1], 
     ldap_injection: maliciousCommands[2],
     attack_types: ['Command Injection', 'XSS', 'LDAP Injection'],
     risk_level: 'EXTREME',
     input_data: { cmd, user, script },
-    warning: '⚠️ This endpoint combines multiple attack vectors for maximum threat score'
+    warning: 'This endpoint combines multiple attack vectors for maximum threat score'
   });
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log('⚠️ WARNING: This server contains intentionally vulnerable endpoints for security testing');
-  console.log('📋 Available vulnerable endpoints:');
+  console.log('WARNING: This server contains intentionally vulnerable endpoints for security testing');
+  console.log('Available vulnerable endpoints:');
   console.log('   GET  /user/:id - SQL Injection');
   console.log('   GET  /file/:filename - Path Traversal');
   console.log('   POST /login - LDAP Injection');
   console.log('');
-  console.log('🚨 HIGH-RISK ATTACK ENDPOINTS (for model testing):');
+  console.log('HIGH-RISK ATTACK ENDPOINTS (for model testing):');
   console.log('   GET  /admin/bypass/:token - Advanced SQL Injection');
   console.log('   GET  /system/read/:path - Severe Path Traversal');
   console.log('   POST /execute/command - Multi-Vector Attack');
