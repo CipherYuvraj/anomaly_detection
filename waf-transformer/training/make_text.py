@@ -23,14 +23,12 @@ try:
         for line in f:
             line_number += 1
             line = line.strip()
-            if line:  # Skip empty lines
-                # Handle multiple JSON objects on the same line
+            if line:  
                 json_objects = []
                 current_pos = 0
                 
                 while current_pos < len(line):
                     try:
-                        # Try to decode JSON starting from current position
                         decoder = json.JSONDecoder()
                         obj, idx = decoder.raw_decode(line, current_pos)
                         json_objects.append(obj)

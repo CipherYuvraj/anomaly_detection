@@ -379,14 +379,12 @@
     </div>
 
     <script>
-        // Initialize Socket.IO connection
         const socket = io();
         
         let chart;
         let recentScores = [];
         let maliciousCount = 0;
 
-        // Initialize chart
         function initChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
             chart = new Chart(ctx, {
@@ -404,7 +402,7 @@
                             if (context && context.parsed && typeof context.parsed.y === 'number') {
                                 return context.parsed.y > 5.46 ? '#ff6b6b' : '#51cf66';
                             }
-                            return '#667eea'; // Default color
+                            return '#667eea'; 
                         }
                     }]
                 },
@@ -432,14 +430,13 @@
             });
         }
 
-        // Update statistics
         function updateStats(stats) {
             try {
                 const totalEl = document.getElementById('totalRequests');
                 const maliciousEl = document.getElementById('maliciousRequests');
                 const safeEl = document.getElementById('safeRequests');
                 const avgEl = document.getElementById('averageScore');
-                
+                        
                 if (totalEl && typeof stats.totalRequests === 'number') {
                     totalEl.textContent = stats.totalRequests;
                 }
@@ -457,7 +454,6 @@
             }
         }
 
-        // Add new request to the list
         function addRequestToList(request) {
             const requestsList = document.getElementById('requestsList');
             const requestDiv = document.createElement('div');
@@ -482,7 +478,6 @@
             
             requestsList.insertBefore(requestDiv, requestsList.firstChild);
             
-            // Keep only last 20 requests visible
             const requests = requestsList.children;
             if (requests.length > 20) {
                 requestsList.removeChild(requests[requests.length - 1]);
@@ -499,14 +494,13 @@
                     chart.data.labels = recentScores.map((_, i) => i + 1);
                     chart.data.datasets[0].data = recentScores.slice().reverse();
                     try {
-                        chart.update('none'); // Use 'none' animation mode for better performance
+                        chart.update('none'); 
                     } catch (error) {
                         console.error('Chart update error:', error);
                     }
                 }
             }
             
-            // Show alert badge for malicious requests
             if (request.status === 'MALICIOUS') {
                 maliciousCount++;
                 const alertBadge = document.getElementById('alertBadge');
@@ -514,11 +508,9 @@
                 alertBadge.textContent = maliciousCount > 99 ? '99+' : maliciousCount;
             }
             
-            // Update last update time
             document.getElementById('lastUpdate').textContent = `Last update: ${timestamp}`;
         }
 
-        // Socket event handlers
         socket.on('connect', () => {
             console.log('Connected to dashboard server');
         });
@@ -568,11 +560,9 @@
             console.log('Disconnected from dashboard server');
         });
 
-        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', () => {
             initChart();
             
-            // Clear alert badge on click
             document.getElementById('alertBadge').addEventListener('click', () => {
                 maliciousCount = 0;
                 document.getElementById('alertBadge').style.display = 'none';

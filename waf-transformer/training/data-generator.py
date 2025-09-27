@@ -1,5 +1,3 @@
-# Generate a synthetic benign JSONL dataset for an e-commerce store
-# matching the user's schema. Saves to /mnt/data/ecom_benign.jsonl
 import json, random, time, pathlib, itertools, string
 
 out_path = pathlib.Path("ecom_benign.jsonl")

@@ -2,9 +2,7 @@ import json
 import sys
 import os
 
-# Get the directory where this script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# Go up to the root directory of the project
 root_dir = os.path.dirname(os.path.dirname(script_dir))
 
 def as_text(r):
@@ -18,7 +16,6 @@ def as_text(r):
     body = str(body)[:80]
     return f'{r["m"]} {r["p"]} ? {q} UA={ua} CT={ct} CL={cl} CK={ck} B={body} S={r.get("s","")}'
 
-# Use absolute paths
 input_file = os.path.join(root_dir, 'parsed_logs.jsonl')
 output_file = os.path.join(script_dir, 'ecom.txt')
 
@@ -32,7 +29,6 @@ with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', e
             except:
                 pass
 
-# Create train/val splits
 ecom_file = os.path.join(script_dir, 'ecom.txt')
 train_file = os.path.join(script_dir, 'train.txt')
 val_file = os.path.join(script_dir, 'val.txt')

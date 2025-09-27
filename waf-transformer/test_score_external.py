@@ -7,10 +7,10 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from ml_scorer.score_requests import score
 
-threshold = 5.7
+threshold = 5.8
 parsed_logs_path = "../parsed_logs.jsonl"
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../dashboard/public', static_url_path='/static')
 app.config['SECRET_KEY'] = 'waf_dashboard_secret'
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -82,11 +82,26 @@ def score_and_process_request(request_line):
         
         socketio.emit('newRequest', request_data)
         socketio.emit('statsUpdate', {
-            'total': stats['totalRequests'],
-            'safe': stats['safeRequests'],
-            'malicious': stats['maliciousRequests'],
-            'average': stats['averageScore']
+            'totalRequests': stats['totalRequests'],
+            'maliciousRequests': stats['maliciousRequests'],
+            'safeRequests': stats['safeRequests'],
+            'averageScore': stats['averageScore']
         })
+        
+        try:
+            import requests
+            requests.post('http://localhost:8080/api/update', 
+                         json={
+                             'request_data': request_data,
+                             'stats': {
+                                 'totalRequests': stats['totalRequests'],
+                                 'maliciousRequests': stats['maliciousRequests'],
+                                 'safeRequests': stats['safeRequests'],
+                                 'averageScore': stats['averageScore']
+                             }
+                         }, timeout=1)
+        except:
+            pass  
         
         print(f"New Request Scored: {req_score:.2f} - {status}")
         print(f"Request Details: {request['m']} {request['p']} from {request.get('s', 'unknown')}")
@@ -106,22 +121,26 @@ def score_last_request():
 def dashboard():
     """Serve the dashboard HTML"""
     try:
-        with open('../dashboard/public/index.html', 'r') as f:
+        with open('../dashboard/public/index.html', 'r', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
-        return """
-        <html>
-        <head><title>WAF Dashboard</title></head>
-        <body>
-        <h1>WAF Anomaly Detection Dashboard</h1>
-        <p>Dashboard HTML file not found. The API endpoints are still available at:</p>
-        <ul>
-        <li>/api/requests - Get recent requests</li>
-        <li>/api/stats - Get statistics</li>
-        </ul>
-        </body>
-        </html>
-        """
+        try:
+            with open('dashboard/public/index.html', 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            return """
+            <html>
+            <head><title>WAF Dashboard</title></head>
+            <body>
+            <h1>WAF Anomaly Detection Dashboard</h1>
+            <p>Dashboard HTML file not found. The API endpoints are still available at:</p>
+            <ul>
+            <li>/api/requests - Get recent requests</li>
+            <li>/api/stats - Get statistics</li>
+            </ul>
+            </body>
+            </html>
+            """
 
 @app.route('/api/requests')
 def get_requests():
@@ -134,12 +153,14 @@ def get_stats():
 @socketio.on('connect')
 def handle_connect():
     print('🔌 Client connected to dashboard')
-    socketio.emit('newRequest', recent_requests[:20])
-    socketio.emit('statsUpdate', {
-        'total': stats['totalRequests'],
-        'safe': stats['safeRequests'], 
-        'malicious': stats['maliciousRequests'],
-        'average': stats['averageScore']
+    socketio.emit('initialData', {
+        'stats': {
+            'totalRequests': stats['totalRequests'],
+            'maliciousRequests': stats['maliciousRequests'],
+            'safeRequests': stats['safeRequests'],
+            'averageScore': stats['averageScore']
+        },
+        'recentRequests': recent_requests[:20]
     })
 
 @socketio.on('disconnect')

@@ -12022,3 +12022,28 @@
 {"m":"GET","p":"/","q":{"new":":num"},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":"","cookieKeys":[]},"s":"128.185.168.207","b":{}}
 {"m":"GET","p":"/","q":{},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":"","cookieKeys":[]},"s":"128.185.168.207","b":{}}
 {"m":"GET","p":"/","q":{},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":"","cookieKeys":[]},"s":"128.185.168.207","b":{}}
+{"m":"POST","p":"/","q":{},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.6584","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.6584","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"PostmanRuntime/7.46.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/user/:num' UNION SELECT username,password FROM admin; --","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/user","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/login","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"POST","p":"/login","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.6584","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.6584","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/user/krish","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.6584","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"POST","p":"/execute/command","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"cmd":"rm -rf /; cat /etc/passwd","user":"admin)(|(password=*))","script":"<script>alert(\"XSS\")</script>"}}
+{"m":"POST","p":"/execute/command","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"cmd":"rm -rf /; cat /etc/passwd","user":"admin)(|(password=*))","script":"<script>alert(\"XSS\")</script>"}}
+{"m":"POST","p":"/execute/command","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"cmd":"rm -rf /; cat /etc/passwd","user":"admin)(|(password=*))","script":"<script>alert(\"XSS\")</script>"}}
+{"m":"GET","p":"/user/krish","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/user/:num' UNION SELECT username,password FROM admin; --","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/login","q":{"id":"hello","password":":num"},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/login","q":{"id":"hello","password":":num"},"h":{"ua":"PostmanRuntime/7.48.0","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"POST","p":"/execute/command","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"cmd":"rm -rf /; cat /etc/passwd","user":"admin)(|(password=*))","script":"<script>alert(\"XSS\")</script>"}}
+{"m":"POST","p":"/api/login","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"username":"admin","password":"password123"}}
+{"m":"GET","p":"/api/login","q":{},"h":{"ua":"PostmanRuntime/7.48.0","ct":"application/json","cl":":num","cookieKeys":[]},"s":"172.18.0.1","b":{"username":"admin","password":"password123"}}
+{"m":"GET","p":"/","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
+{"m":"GET","p":"/favicon.ico","q":{},"h":{"ua":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36","ct":"","cl":"","cookieKeys":[]},"s":"172.18.0.1","b":{}}
